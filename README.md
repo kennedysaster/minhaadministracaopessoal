@@ -11,7 +11,7 @@ Painel pessoal com **finanças**, **tarefas** e **contas a pagar**, rodando em N
 
 ## Como rodar
 
-Requisitos: [Node.js](https://nodejs.org) 18 ou mais recente.
+Requisitos: [Node.js](https://nodejs.org) 22.13 ou mais recente (usa o SQLite embutido no Node, sem compilar nada).
 
 ```bash
 npm install

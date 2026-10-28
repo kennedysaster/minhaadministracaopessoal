@@ -17,10 +17,9 @@
   },
   "homepage": "https://github.com/kennedysaster/minhaadministracaopessoal#readme",
   "dependencies": {
-    "better-sqlite3": "^13.0.3",
     "express": "^5.3.0"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=22.13"
   }
 }

@@ -1,13 +1,27 @@
 const path = require('path');
 const fs = require('fs');
-const Database = require('better-sqlite3');
+// SQLite embutido no Node.js (22.13+): não precisa compilar nada
+const { DatabaseSync } = require('node:sqlite');
 
 const dataDir = path.join(__dirname, '..', 'data');
 fs.mkdirSync(dataDir, { recursive: true });
 
 const dbFile = process.env.DB_FILE || path.join(dataDir, 'admin.db');
-const db = new Database(dbFile);
-db.pragma('journal_mode = WAL');
+const db = new DatabaseSync(dbFile);
+db.exec('PRAGMA journal_mode = WAL');
+
+// Executa fn dentro de uma transação
+db.transacao = (fn) => {
+  db.exec('BEGIN');
+  try {
+    const r = fn();
+    db.exec('COMMIT');
+    return r;
+  } catch (e) {
+    db.exec('ROLLBACK');
+    throw e;
+  }
+};
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS transacoes (

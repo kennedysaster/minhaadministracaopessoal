@@ -105,11 +105,11 @@ app.post('/api/contas/:id/pagar', (req, res) => {
   if (!conta) return erro(res, 'Não encontrada', 404);
   if (conta.paga) return erro(res, 'Conta já está paga');
   const d = hoje();
-  db.transaction(() => {
+  db.transacao(() => {
     db.prepare('UPDATE contas SET paga = 1, pago_em = ? WHERE id = ?').run(d, conta.id);
     db.prepare("INSERT INTO transacoes (descricao, valor, tipo, categoria, data) VALUES (?, ?, 'despesa', 'Contas', ?)")
       .run(conta.descricao, conta.valor, d);
-  })();
+  });
   res.json(db.prepare('SELECT * FROM contas WHERE id = ?').get(conta.id));
 });
 
