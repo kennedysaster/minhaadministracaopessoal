@@ -1,0 +1,26 @@
+{
+  "name": "minhaadministracaopessoal",
+  "version": "1.0.0",
+  "description": "Painel pessoal: finanças, tarefas e contas a pagar",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kennedysaster/minhaadministracaopessoal.git"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kennedysaster/minhaadministracaopessoal/issues"
+  },
+  "homepage": "https://github.com/kennedysaster/minhaadministracaopessoal#readme",
+  "dependencies": {
+    "better-sqlite3": "^13.0.3",
+    "express": "^5.3.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
