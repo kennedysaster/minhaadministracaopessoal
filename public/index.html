@@ -3,84 +3,55 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Minha Administração Pessoal</title>
+  <title>Minha Administração</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <header class="topo">
-    <div>
-      <h1>Minha Administração Pessoal</h1>
-      <p class="sub">Finanças, tarefas e contas em um só lugar</p>
-    </div>
-    <label class="mes">Mês <input type="month" id="mes" /></label>
-  </header>
+  <div class="app">
+    <aside class="menu" aria-label="Menu principal">
+      <a class="marca" href="#/inicio">
+        <span class="marca-simbolo" aria-hidden="true">M</span>
+        <span class="marca-nome">Minha<br />Administração</span>
+      </a>
+      <nav>
+        <a href="#/inicio" data-rota="inicio">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11l8-6 8 6v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/></svg>
+          <span>Início</span>
+        </a>
+        <a href="#/financas" data-rota="financas">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M16 14.5h2"/></svg>
+          <span>Finanças</span>
+        </a>
+        <a href="#/contas" data-rota="contas">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg>
+          <span>Contas</span>
+        </a>
+        <a href="#/tarefas" data-rota="tarefas">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/></svg>
+          <span>Tarefas</span>
+        </a>
+      </nav>
+    </aside>
 
-  <main>
-    <!-- Resumo -->
-    <section class="cards" id="resumo">
-      <div class="card"><span class="rotulo">Receitas</span><strong id="r-receitas" class="pos">–</strong></div>
-      <div class="card"><span class="rotulo">Despesas</span><strong id="r-despesas" class="neg">–</strong></div>
-      <div class="card"><span class="rotulo">Saldo do mês</span><strong id="r-saldo">–</strong></div>
-      <div class="card"><span class="rotulo">Contas em aberto</span><strong id="r-contas">–</strong><small id="r-contas-info"></small></div>
-      <div class="card"><span class="rotulo">Tarefas pendentes</span><strong id="r-tarefas">–</strong><small id="r-tarefas-info"></small></div>
-    </section>
+    <main id="tela" tabindex="-1"></main>
+  </div>
 
-    <div class="grade">
-      <!-- Finanças -->
-      <section class="painel" id="financas">
-        <h2>Finanças</h2>
-        <form id="f-transacao" class="form">
-          <input name="descricao" placeholder="Descrição" required />
-          <input name="valor" type="number" step="0.01" min="0" placeholder="Valor" required />
-          <select name="tipo">
-            <option value="despesa">Despesa</option>
-            <option value="receita">Receita</option>
-          </select>
-          <input name="categoria" placeholder="Categoria" list="categorias" />
-          <datalist id="categorias">
-            <option>Alimentação</option><option>Moradia</option><option>Transporte</option>
-            <option>Saúde</option><option>Lazer</option><option>Educação</option>
-            <option>Salário</option><option>Contas</option><option>Outros</option>
-          </datalist>
-          <input name="data" type="date" />
-          <button>Adicionar</button>
-        </form>
-        <div id="categorias-barras" class="barras"></div>
-        <ul id="l-transacoes" class="lista"></ul>
-      </section>
+  <dialog id="modal" aria-labelledby="modal-titulo">
+    <form method="dialog" id="modal-form" novalidate>
+      <h2 id="modal-titulo"></h2>
+      <div id="modal-corpo"></div>
+      <p id="modal-erro" class="erro-form" role="alert" hidden></p>
+      <div class="modal-acoes">
+        <button type="button" class="btn btn-leve" value="cancelar" id="modal-cancelar">Cancelar</button>
+        <button type="submit" class="btn btn-principal" id="modal-ok">Salvar</button>
+      </div>
+    </form>
+  </dialog>
 
-      <!-- Tarefas -->
-      <section class="painel" id="tarefas">
-        <h2>Tarefas</h2>
-        <form id="f-tarefa" class="form">
-          <input name="titulo" placeholder="Nova tarefa" required />
-          <input name="prazo" type="date" />
-          <select name="prioridade">
-            <option value="media">Média</option>
-            <option value="alta">Alta</option>
-            <option value="baixa">Baixa</option>
-          </select>
-          <button>Adicionar</button>
-        </form>
-        <ul id="l-tarefas" class="lista"></ul>
-      </section>
-
-      <!-- Contas -->
-      <section class="painel" id="contas">
-        <h2>Contas a pagar</h2>
-        <form id="f-conta" class="form">
-          <input name="descricao" placeholder="Conta (ex.: Luz)" required />
-          <input name="valor" type="number" step="0.01" min="0" placeholder="Valor" required />
-          <input name="vencimento" type="date" required />
-          <button>Adicionar</button>
-        </form>
-        <p class="dica">Ao marcar como paga, a despesa é lançada automaticamente em Finanças.</p>
-        <ul id="l-contas" class="lista"></ul>
-      </section>
-    </div>
-  </main>
-
-  <div id="aviso" class="aviso" hidden></div>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
   <script src="app.js"></script>
 </body>
 </html>

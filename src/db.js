@@ -52,6 +52,32 @@ db.exec(`
     pago_em TEXT,
     criado_em TEXT NOT NULL DEFAULT (datetime('now'))
   );
+
+  -- Contas que se repetem todo mês (luz, internet, aluguel...)
+  CREATE TABLE IF NOT EXISTS contas_fixas (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    descricao TEXT NOT NULL,
+    valor REAL NOT NULL CHECK (valor >= 0),
+    dia INTEGER NOT NULL CHECK (dia BETWEEN 1 AND 31),
+    inicio TEXT NOT NULL,          -- primeiro mês (AAAA-MM) em que é gerada
+    ativa INTEGER NOT NULL DEFAULT 1,
+    criado_em TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+
+  -- Registro de quais meses já foram gerados para cada conta fixa
+  CREATE TABLE IF NOT EXISTS contas_fixas_geradas (
+    fixa_id INTEGER NOT NULL,
+    mes TEXT NOT NULL,
+    PRIMARY KEY (fixa_id, mes)
+  );
 `);
+
+// Migrações simples para bancos criados na versão anterior
+function adicionarColuna(tabela, coluna, definicao) {
+  const cols = db.prepare(`PRAGMA table_info(${tabela})`).all().map((c) => c.name);
+  if (!cols.includes(coluna)) db.exec(`ALTER TABLE ${tabela} ADD COLUMN ${coluna} ${definicao}`);
+}
+adicionarColuna('contas', 'fixa_id', 'INTEGER');
+adicionarColuna('transacoes', 'conta_id', 'INTEGER');
 
 module.exports = db;

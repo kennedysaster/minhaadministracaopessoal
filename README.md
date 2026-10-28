@@ -1,13 +1,22 @@
 # Minha Administração Pessoal
 
-Painel pessoal com **finanças**, **tarefas** e **contas a pagar**, rodando em Node.js com banco SQLite local.
+Painel pessoal com **finanças**, **contas a pagar** e **tarefas**, rodando em Node.js com banco SQLite local.
 
-## Funcionalidades
+## Telas
 
-- **Resumo do mês**: receitas, despesas, saldo, contas em aberto e tarefas pendentes
-- **Finanças**: lançamento de receitas e despesas por categoria, com gráfico de gastos por categoria
-- **Tarefas**: prazo, prioridade, marcação de concluída e alerta de atrasadas
-- **Contas a pagar**: vencimento, alerta de vencidas/próximas; ao pagar, a despesa entra em Finanças automaticamente
+- **Visão geral**: saldo do mês em destaque, gráfico de receitas e despesas dos últimos 6 meses, próximos vencimentos, tarefas pendentes e gastos por categoria
+- **Finanças**: receitas e despesas do mês agrupadas por dia, com filtros por tipo e categoria, busca e **exportação para Excel**
+- **Contas**: contas em aberto (com alerta de vencidas e próximas), contas pagas e **contas fixas mensais**
+- **Tarefas**: pendentes e concluídas, com prazo e prioridade
+
+## Ações
+
+- Criar, **editar** e excluir lançamentos, contas, contas fixas e tarefas
+- **Pagar conta** escolhendo a data: a despesa entra em Finanças automaticamente
+- **Desfazer pagamento**: a conta volta para Em aberto e o lançamento sai de Finanças
+- **Contas fixas mensais** (luz, internet, aluguel): cadastre uma vez e a conta é criada todo mês. Pode pausar e retomar. Se o dia já passou no mês do cadastro, começa no mês seguinte. Dia 31 vira o último dia em meses curtos
+- Concluir tarefa com opção de desfazer
+- Funciona no celular (menu vira barra inferior) e no modo escuro
 
 ## Como rodar
 
@@ -20,7 +29,7 @@ npm start
 
 Abra http://localhost:3000 no navegador.
 
-Os dados ficam em `data/admin.db` (fora do Git). Para usar outro arquivo ou porta:
+Os dados ficam em `data/admin.db` (fora do Git). Bancos da versão anterior são atualizados automaticamente. Para usar outro arquivo ou porta:
 
 ```bash
 DB_FILE=/caminho/meu.db PORT=4000 npm start
@@ -36,12 +45,12 @@ npm test
 
 ```
 src/
-  db.js        # conexão e criação das tabelas SQLite
+  db.js        # conexão, tabelas e migrações do SQLite
   server.js    # API REST (Express)
 public/
-  index.html   # painel
+  index.html   # estrutura com menu lateral e modal
   style.css
-  app.js
+  app.js       # telas, formulários e ações
 test/
   api.test.js  # testes da API
 ```
@@ -50,12 +59,16 @@ test/
 
 | Método | Rota | Descrição |
 |---|---|---|
-| GET | `/api/resumo?mes=AAAA-MM` | Totais do mês, gastos por categoria, contas e tarefas |
+| GET | `/api/resumo?mes=AAAA-MM` | Saldo, histórico de 6 meses, categorias, próximas contas e tarefas |
 | GET / POST | `/api/transacoes` | Listar (`?mes=AAAA-MM`) / criar lançamento |
-| DELETE | `/api/transacoes/:id` | Excluir lançamento |
-| GET / POST | `/api/tarefas` | Listar / criar tarefa |
-| PATCH | `/api/tarefas/:id` | Marcar `{ "concluida": true }` |
-| DELETE | `/api/tarefas/:id` | Excluir tarefa |
+| PUT / DELETE | `/api/transacoes/:id` | Editar / excluir lançamento |
+| GET | `/api/categorias` | Categorias padrão e usadas |
+| GET | `/api/exportar?mes=AAAA-MM` | Baixar lançamentos do mês em CSV para Excel |
 | GET / POST | `/api/contas` | Listar / criar conta |
-| POST | `/api/contas/:id/pagar` | Marcar como paga e lançar despesa |
-| DELETE | `/api/contas/:id` | Excluir conta |
+| PUT / DELETE | `/api/contas/:id` | Editar / excluir conta |
+| POST | `/api/contas/:id/pagar` | Pagar (`{ "data": "AAAA-MM-DD" }` opcional) e lançar despesa |
+| POST | `/api/contas/:id/desfazer` | Desfazer pagamento |
+| GET / POST | `/api/contas-fixas` | Listar / criar conta fixa mensal |
+| PUT / DELETE | `/api/contas-fixas/:id` | Editar (inclui `ativa`) / excluir conta fixa |
+| GET / POST | `/api/tarefas` | Listar / criar tarefa |
+| PUT / PATCH / DELETE | `/api/tarefas/:id` | Editar / marcar `{ "concluida": true }` / excluir |
