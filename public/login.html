@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Entrar | Minha Administração</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="pagina-login">
+  <div class="login">
+    <aside class="login-marca">
+      <div class="marca">
+        <span class="marca-simbolo" aria-hidden="true">M</span>
+        <span class="marca-nome">Minha<br />Administração</span>
+      </div>
+      <div class="login-chamada">
+        <h1>Suas contas pessoais e as da empresa, cada uma no seu lugar.</h1>
+        <ul>
+          <li>Finanças, contas e tarefas da pessoa física</li>
+          <li>Despesas, tributos, faturamento e links da empresa</li>
+          <li>Cada usuário vê apenas o que foi liberado para ele</li>
+        </ul>
+      </div>
+    </aside>
+
+    <main class="login-conteudo">
+      <div class="login-cartao">
+        <div class="abas login-abas" role="tablist">
+          <button type="button" role="tab" id="aba-entrar" aria-selected="true" aria-controls="form-entrar">Entrar</button>
+          <button type="button" role="tab" id="aba-criar" aria-selected="false" aria-controls="form-criar">Criar conta</button>
+        </div>
+
+        <form id="form-entrar" class="ficha" role="tabpanel" aria-labelledby="aba-entrar" novalidate>
+          <h2>Entrar</h2>
+          <div class="campo">
+            <label for="login">CPF ou e-mail</label>
+            <input id="login" name="login" autocomplete="username" required autofocus />
+          </div>
+          <div class="campo">
+            <label for="senha">Senha</label>
+            <input id="senha" name="senha" type="password" autocomplete="current-password" required />
+          </div>
+          <p class="erro-form" role="alert" hidden></p>
+          <button type="submit" class="btn btn-principal largo">Entrar</button>
+          <p class="nota">Esqueceu a senha? Peça ao usuário master uma senha temporária.</p>
+        </form>
+
+        <form id="form-criar" class="ficha" role="tabpanel" aria-labelledby="aba-criar" hidden novalidate>
+          <h2>Criar conta</h2>
+          <p class="nota">Todos os campos com * são obrigatórios. Você começa com acesso às suas finanças pessoais.</p>
+          <div class="grade-campos" id="campos-cadastro"></div>
+          <p class="erro-form" role="alert" hidden></p>
+          <button type="submit" class="btn btn-principal largo">Criar minha conta</button>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  <script src="js/base.js"></script>
+  <script src="js/login.js"></script>
+</body>
+</html>

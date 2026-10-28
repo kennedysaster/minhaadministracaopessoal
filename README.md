@@ -1,22 +1,6 @@
 # Minha Administração Pessoal
 
-Painel pessoal com **finanças**, **contas a pagar** e **tarefas**, rodando em Node.js com banco SQLite local.
-
-## Telas
-
-- **Visão geral**: saldo do mês em destaque, gráfico de receitas e despesas dos últimos 6 meses, próximos vencimentos, tarefas pendentes e gastos por categoria
-- **Finanças**: receitas e despesas do mês agrupadas por dia, com filtros por tipo e categoria, busca e **exportação para Excel**
-- **Contas**: contas em aberto (com alerta de vencidas e próximas), contas pagas e **contas fixas mensais**
-- **Tarefas**: pendentes e concluídas, com prazo e prioridade
-
-## Ações
-
-- Criar, **editar** e excluir lançamentos, contas, contas fixas e tarefas
-- **Pagar conta** escolhendo a data: a despesa entra em Finanças automaticamente
-- **Desfazer pagamento**: a conta volta para Em aberto e o lançamento sai de Finanças
-- **Contas fixas mensais** (luz, internet, aluguel): cadastre uma vez e a conta é criada todo mês. Pode pausar e retomar. Se o dia já passou no mês do cadastro, começa no mês seguinte. Dia 31 vira o último dia em meses curtos
-- Concluir tarefa com opção de desfazer
-- Funciona no celular (menu vira barra inferior) e no modo escuro
+Painel com login para administrar a **pessoa física** (finanças, contas, tarefas, dados pessoais) e a **pessoa jurídica** (empresas, despesas, tributos, Pix, faturamento e links úteis), com cadastro de pessoas e permissões por usuário. Roda em Node.js com banco SQLite local.
 
 ## Como rodar
 
@@ -29,11 +13,53 @@ npm start
 
 Abra http://localhost:3000 no navegador.
 
-Os dados ficam em `data/admin.db` (fora do Git). Bancos da versão anterior são atualizados automaticamente. Para usar outro arquivo ou porta:
+### Primeiro acesso (usuário master)
 
-```bash
-DB_FILE=/caminho/meu.db PORT=4000 npm start
+Na primeira vez, o terminal mostra a **senha temporária** do usuário master:
+
 ```
+Usuário master criado
+Login: CPF 71596372168 ou kennedysaster@gmail.com
+Senha temporária: xxxxxxxxxx
+```
+
+Entre com o CPF (ou e-mail) e essa senha. O sistema pede uma senha nova no primeiro acesso.
+Perdeu a senha do master? Rode `npm run senha-master` para gerar outra.
+
+Os dados ficam em `data/admin.db` (fora do Git). Bancos de versões anteriores são atualizados automaticamente e os dados pessoais já existentes passam a pertencer ao master.
+
+## Organização
+
+| Área | Telas |
+|---|---|
+| **Pessoa física** | Visão geral, Finanças, Contas (inclui contas fixas mensais), Tarefas, Meus dados (endereço, contatos, contas bancárias) |
+| **Pessoa jurídica** | Empresas, Despesas e receitas, Faturamento, Links úteis |
+| **Cadastros** | Pessoas físicas e jurídicas, com endereço, e-mail, telefones e contas bancárias |
+| **Administração** | Usuários e permissões |
+
+- Cada usuário vê **somente as próprias** finanças, contas e tarefas pessoais.
+- Todo usuário criado já vira uma **pessoa física** no cadastro (nome, CPF, e-mail).
+
+## Login e usuários
+
+- **Entrar** com CPF ou e-mail e senha. Cinco erros seguidos bloqueiam por 5 minutos.
+- **Criar conta** pela tela de login exige nome, CPF, e-mail, telefone, endereço completo e data de nascimento. A conta nasce com acesso só às telas pessoais.
+- O master (ou quem tiver permissão) cadastra usuários; uma senha temporária é gerada e trocada no primeiro acesso.
+- Senhas guardadas com scrypt; sessão em cookie `HttpOnly` de 7 dias.
+
+## Permissões
+
+Cada tela, ação e relatório é uma caixa de marcação na ficha do usuário (Administração > Usuários).
+A lista fica em [`src/permissoes.js`](src/permissoes.js): **ao criar uma tela, ação ou relatório novo, basta acrescentar uma linha ali** e ela aparece automaticamente na tela de permissões. O usuário master tem todas, inclusive as futuras.
+
+Somente o master: altera permissões, cadastra empresas e vincula o **usuário responsável** por cada empresa. Usuários comuns só enxergam as empresas pelas quais são responsáveis.
+
+## Empresas
+
+- Cadastro pelo **CNPJ com dados da Receita Federal** (BrasilAPI, com o CNPJ.ws como reserva): razão social, nome fantasia, situação, abertura, natureza jurídica, porte, classificação (MEI, ME, EPP, demais), regime (MEI ou Simples; Lucro Presumido/Real escolhido à mão), CNAE principal e secundários, capital social, endereço, telefone, e-mail e quadro de sócios. Precisa de internet.
+- **Despesas e receitas** nas categorias: outros gastos, outras receitas, tributos federais, tributos estaduais, tributos municipais e transferências Pix (enviadas ou recebidas). Resumo do mês com faturamento, tributos e resultado. Exporta para Excel.
+- **Faturamento** em página própria de inclusão, com o **CNPJ de origem** (o nome é preenchido pelo cadastro ou pela Receita, e a origem entra em Pessoas). Controle de recebido e a receber, acumulado no ano e últimos 12 meses. Exporta para Excel.
+- **Links úteis** por empresa, agrupados por categoria.
 
 ## Testes
 
@@ -45,30 +71,23 @@ npm test
 
 ```
 src/
-  db.js        # conexão, tabelas e migrações do SQLite
-  server.js    # API REST (Express)
+  server.js        # monta a aplicação e as rotas
+  db.js            # tabelas e migrações do SQLite
+  auth.js          # senhas, sessões, permissões e usuário master
+  permissoes.js    # lista de permissões (telas, ações, relatórios)
+  pessoas.js       # validação e gravação de pessoas físicas e jurídicas
+  receita.js       # consulta de CNPJ na Receita
+  util.js          # datas, CPF/CNPJ, CSV
+  rotas/
+    auth.js        # login, criar conta, troca de senha
+    pf.js          # finanças, contas e tarefas pessoais
+    pessoas.js     # cadastro de pessoas e contas bancárias
+    usuarios.js    # usuários e permissões
+    empresas.js    # empresas, despesas, faturamento e links
 public/
-  index.html   # estrutura com menu lateral e modal
-  style.css
-  app.js       # telas, formulários e ações
-test/
-  api.test.js  # testes da API
+  index.html, login.html, style.css
+  js/              # telas (base, pf, pj, cadastros, admin, app, login)
+scripts/
+  senha-master.js  # gera nova senha temporária para o master
+test/              # testes da API
 ```
-
-## API
-
-| Método | Rota | Descrição |
-|---|---|---|
-| GET | `/api/resumo?mes=AAAA-MM` | Saldo, histórico de 6 meses, categorias, próximas contas e tarefas |
-| GET / POST | `/api/transacoes` | Listar (`?mes=AAAA-MM`) / criar lançamento |
-| PUT / DELETE | `/api/transacoes/:id` | Editar / excluir lançamento |
-| GET | `/api/categorias` | Categorias padrão e usadas |
-| GET | `/api/exportar?mes=AAAA-MM` | Baixar lançamentos do mês em CSV para Excel |
-| GET / POST | `/api/contas` | Listar / criar conta |
-| PUT / DELETE | `/api/contas/:id` | Editar / excluir conta |
-| POST | `/api/contas/:id/pagar` | Pagar (`{ "data": "AAAA-MM-DD" }` opcional) e lançar despesa |
-| POST | `/api/contas/:id/desfazer` | Desfazer pagamento |
-| GET / POST | `/api/contas-fixas` | Listar / criar conta fixa mensal |
-| PUT / DELETE | `/api/contas-fixas/:id` | Editar (inclui `ativa`) / excluir conta fixa |
-| GET / POST | `/api/tarefas` | Listar / criar tarefa |
-| PUT / PATCH / DELETE | `/api/tarefas/:id` | Editar / marcar `{ "concluida": true }` / excluir |

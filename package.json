@@ -1,11 +1,12 @@
 {
   "name": "minhaadministracaopessoal",
   "version": "1.0.0",
-  "description": "Painel pessoal: finanças, tarefas e contas a pagar",
+  "description": "Painel de administração pessoal e empresarial: finanças, contas, empresas, faturamento e permissões",
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
-    "test": "node --test"
+    "test": "node --test",
+    "senha-master": "node scripts/senha-master.js"
   },
   "repository": {
     "type": "git",
